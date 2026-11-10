@@ -513,7 +513,7 @@ function renderDynamicSequences() {
         labelSpan.className = "diagram-label";
         const contributingChs = [phId];
         for (const channel of config.channels) {
-          if (channel.physicalLight === phId) contributingChs.push(channel.id);
+          if (getPhysicalTargets(channel).includes(phId)) contributingChs.push(channel.id);
         }
         const chListStr = contributingChs.map(id => `Ch ${id}`).join(' + ');
         labelSpan.textContent = `${label} — Resolved Timeline (${chListStr})`;

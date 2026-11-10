@@ -144,6 +144,13 @@ function getSequenceDuration(seq) {
   return totalTime;
 }
 
+// A channel's physicalLight may name one light or a list of lights it drives (e.g. one
+// switch-off curve dimming both DRL tubes on base LED headlights).
+function getPhysicalTargets(channel) {
+  if (!channel || channel.physicalLight === undefined || channel.physicalLight === null) return [];
+  return Array.isArray(channel.physicalLight) ? channel.physicalLight : [channel.physicalLight];
+}
+
 function computePhaseTimeline(vehicleConfig, sides) {
   if (!vehicleConfig || !vehicleConfig.phases) return null;
 

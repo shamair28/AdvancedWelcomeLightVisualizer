@@ -78,12 +78,15 @@ describe('VEHICLE_CONFIGS structure', () => {
 
           if (ch.physicalLight !== undefined) {
             it('should have valid physicalLight reference for ' + ctx, () => {
-              assert.ok(typeof ch.physicalLight === 'number',
-                ctx + ': physicalLight must be a number');
-              const target = config.channels.find(c => c.id === ch.physicalLight);
-              assert.ok(target, ctx + ': physicalLight references non-existent channel ' + ch.physicalLight);
-              assert.ok(target.shapes || target.type,
-                ctx + ': physicalLight references channel without shapes');
+              const targets = Array.isArray(ch.physicalLight) ? ch.physicalLight : [ch.physicalLight];
+              assert.ok(targets.length > 0 && targets.every(id => typeof id === 'number'),
+                ctx + ': physicalLight must be a number or a non-empty array of numbers');
+              for (const targetId of targets) {
+                const target = config.channels.find(c => c.id === targetId);
+                assert.ok(target, ctx + ': physicalLight references non-existent channel ' + targetId);
+                assert.ok(target.shapes || target.type,
+                  ctx + ': physicalLight references channel without shapes');
+              }
             });
           }
         }
@@ -141,10 +144,21 @@ describe('VEHICLE_CONFIGS structure', () => {
 describe('base LED vehicle config', () => {
   const config = VEHICLE_CONFIGS.bmw_g20_lci_base_led;
 
-  it('should exist as a base LED grid config', () => {
+  it('should exist as a base LED image config', () => {
     assert.ok(config);
-    assert.strictEqual(config.type, 'grid');
+    assert.strictEqual(config.type, 'image');
     assert.strictEqual(config.baseLed, true);
+    assert.ok(fs.existsSync(config.image), 'missing image asset ' + config.image);
+  });
+
+  it('should play on-curves in the unlock phase and off-curves in the switch-off phase', () => {
+    assert.deepStrictEqual(config.phases.map(phase => phase.channels), [[1, 7, 4], [3, 5]]);
+  });
+
+  it('should drive both DRL tubes from the shared tube curves', () => {
+    const byId = id => config.channels.find(ch => ch.id === id);
+    assert.deepStrictEqual(byId(2).physicalLight, [1, 7]);
+    assert.deepStrictEqual(byId(3).physicalLight, [1, 7]);
   });
 
   it('should label channels 1 to 7', () => {

@@ -78,7 +78,7 @@ function getChartData(seqIndex) {
       if (config) {
         const chConfig = config.channels && config.channels.find(c => c.id === chId);
         if (chConfig && chConfig.physicalLight && config.defaultStates) {
-          const defaultBrightness = (config.defaultStates[chConfig.physicalLight] || {}).brightness || 0;
+          const defaultBrightness = (config.defaultStates[getPhysicalTargets(chConfig)[0]] || {}).brightness || 0;
           if (leftData.points.length > 0) leftData.points[0].b = defaultBrightness;
           if (rightData.points.length > 0) rightData.points[0].b = defaultBrightness;
         }
@@ -113,7 +113,7 @@ function getDefaultBrightnessLines(seqIndex) {
   // PhysicalLight default brightness
   const chConfig = config.channels && config.channels.find(c => c.id === chId);
   if (chConfig && chConfig.physicalLight && config.defaultStates) {
-    const defaultBrightness = (config.defaultStates[chConfig.physicalLight] || {}).brightness || 0;
+    const defaultBrightness = (config.defaultStates[getPhysicalTargets(chConfig)[0]] || {}).brightness || 0;
     if (defaultBrightness > 0 && !lines.includes(defaultBrightness)) {
       lines.push(defaultBrightness);
     }
@@ -1222,7 +1222,7 @@ function applyDefaultBrightnessToPoints(points, seqIndex) {
 
   const chConfig = config.channels && config.channels.find(c => c.id === chId);
   if (chConfig && chConfig.physicalLight && config.defaultStates) {
-    const defaultBrightness = (config.defaultStates[chConfig.physicalLight] || {}).brightness || 0;
+    const defaultBrightness = (config.defaultStates[getPhysicalTargets(chConfig)[0]] || {}).brightness || 0;
     if (points.length > 0) points[0].b = defaultBrightness;
   }
 }

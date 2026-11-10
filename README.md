@@ -59,6 +59,15 @@ Curves ("channels") on base LED:
 | 06 | US amber side marker, second trigger (on) |
 | 07 | Outer DRL tube, unlock welcome (on), only exists with the custom Lmm1 |
 
+The base LED visualizer model draws the animation on a photo of the LCI base LED headlight. The animation player plays it in two phases:
+
+- **Unlock welcome:** curves 01 (inner tube), 07 (outer tube) and 04 (side marker).
+- **Switch-off:** curves 03 (both tubes) and 05 (side marker). This phase is anchored at 20 s, about when the car ends the welcome light.
+
+Between the two phases, the tubes hold at 30% and the side marker at 100%, as set by the Lmm1 brightness bytes. Curves 02 and 06 belong to the second welcome trigger, so the player doesn't play them.
+
+To let one curve drive several lights, `physicalLight` in `vehicles.js` accepts a list of channel ids as well as a single one.
+
 The base LED templates require a custom **Lmm1_Data** in both FLM2 Left 0x43 and Right 0x44: stock wert_67 with byte 208 (0-based) changed from `01` to `07`, so the outer tube uses curve 07 instead of curve 01. Lmm2 stays wert_47 and Staging2 stays wert_01. The page shows the required value (and the stock one for comparison) in the Lmm1_Data section.
 
 ### Installation

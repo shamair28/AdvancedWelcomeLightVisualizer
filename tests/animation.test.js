@@ -311,3 +311,26 @@ describe('getLightElement', () => {
     afterEach();
   });
 });
+
+describe('getPhysicalTargets', () => {
+  it('should return an empty list when there is no physicalLight', () => {
+    assert.deepStrictEqual(getPhysicalTargets({ id: 1 }), []);
+  });
+
+  it('should wrap a single physicalLight id', () => {
+    assert.deepStrictEqual(getPhysicalTargets({ id: 3, physicalLight: 1 }), [1]);
+  });
+
+  it('should pass through a list of physicalLight ids', () => {
+    assert.deepStrictEqual(getPhysicalTargets({ id: 3, physicalLight: [1, 7] }), [1, 7]);
+  });
+});
+
+describe('getControllingChannelsSorted with multi-target aliases', () => {
+  it('should include a channel that drives several lights for each of them', () => {
+    const config = { channels: [{ id: 1 }, { id: 7 }, { id: 3, physicalLight: [1, 7] }] };
+    const timeline = { channelPhaseMap: { 1: 0, 7: 0, 3: 1 } };
+    assert.deepStrictEqual(getControllingChannelsSorted(1, config, timeline), [1, 3]);
+    assert.deepStrictEqual(getControllingChannelsSorted(7, config, timeline), [7, 3]);
+  });
+});

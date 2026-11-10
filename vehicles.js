@@ -56,16 +56,39 @@ const VEHICLE_CONFIGS = {
     },
     "bmw_g20_lci_base_led": {
         name: "BMW G20 LCI Base LED (000043AF)",
-        type: "grid",
+        type: "image",
         baseLed: true,
+        image: "assets/bmw_g20_lci_base_led.png",
+        viewBox: "0 0 720 324",
+        baseSide: "left",
+        // Unlock welcome plays the on-curves; switch-off (about 20 s later on the car) plays the off-curves
+        phases: [
+            { name: "Unlock welcome", channels: [1, 7, 4], maxDuration: 20000 },
+            { name: "Switch-off", channels: [3, 5], anchor: 20000, maxDuration: null }
+        ],
+        // Steady state between the curves, from the Lmm1 brightness bytes (1E = 30% tubes, 64 = 100% side marker)
+        defaultStates: {
+            1: { brightness: 30 },
+            7: { brightness: 30 },
+            4: { brightness: 100 }
+        },
         channels: [
-            { id: 1, label: "Inner DRL tube, unlock welcome (on)" },
-            { id: 2, label: "Both tubes, second welcome trigger (on)" },
-            { id: 3, label: "Both tubes, switch-off (off)" },
-            { id: 4, label: "US amber side marker, unlock (on)" },
-            { id: 5, label: "US amber side marker, switch-off (off)" },
-            { id: 6, label: "US amber side marker, second trigger (on)" },
-            { id: 7, label: "Outer DRL tube, unlock welcome (on, needs custom Lmm1)" }
+            { id: 1, label: "Inner DRL tube, unlock welcome (on)", shapes: [
+                    { type: "polygon", points: "300 101 641 105 645 112 629 123 338 121 345 140 396 224 388 229 380 228 293 148 290 132" }
+                ]
+            },
+            { id: 2, label: "Both tubes, second welcome trigger (on)", physicalLight: [1, 7] },
+            { id: 3, label: "Both tubes, switch-off (off)", physicalLight: [1, 7] },
+            { id: 4, label: "US amber side marker, unlock (on)", shapes: [
+                    { type: "polygon", points: "46 98 70 90 78 106 52 116", color: "#ffa000" }
+                ]
+            },
+            { id: 5, label: "US amber side marker, switch-off (off)", physicalLight: 4 },
+            { id: 6, label: "US amber side marker, second trigger (on)", physicalLight: 4 },
+            { id: 7, label: "Outer DRL tube, unlock welcome (on, needs custom Lmm1)", shapes: [
+                    { type: "polygon", points: "57 104 305 99 312 105 300 118 100 122 112 137 166 218 160 224 150 224 62 140 54 118" }
+                ]
+            }
         ]
     }
 };

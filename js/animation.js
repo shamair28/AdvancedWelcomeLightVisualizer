@@ -236,7 +236,7 @@ function getLightElement(side, seq, idx) {
     if (config && config.channels) {
       const channel = config.channels.find(ch => ch.id === channelId);
       if (channel && channel.physicalLight) {
-        const el = document.getElementById(`${side}_light_ch${channel.physicalLight}`);
+        const el = document.getElementById(`${side}_light_ch${getPhysicalTargets(channel)[0]}`);
         if (el) return el;
       }
     }
@@ -269,7 +269,7 @@ function findSequenceByChannelId(side, channelId) {
 function getControllingChannelsSorted(physicalChId, config, timeline) {
   const channels = [physicalChId];
   for (const ch of config.channels) {
-    if (ch.physicalLight === physicalChId) channels.push(ch.id);
+    if (getPhysicalTargets(ch).includes(physicalChId)) channels.push(ch.id);
   }
   channels.sort((a, b) => {
     const phaseA = timeline.channelPhaseMap[a] !== undefined ? timeline.channelPhaseMap[a] : -1;
@@ -396,7 +396,7 @@ function updateVisuals(time) {
           const el = document.getElementById(`${side}_light_ch${channel.id}`);
           if (!el) continue;
 
-          const hasPhysicalRefs = config.channels.some(ch => ch.physicalLight === channel.id);
+          const hasPhysicalRefs = config.channels.some(ch => getPhysicalTargets(ch).includes(channel.id));
 
           if (hasPhysicalRefs) {
             const bri = getPhysicalLightBrightness(channel.id, time, side, config);
