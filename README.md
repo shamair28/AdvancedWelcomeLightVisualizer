@@ -68,6 +68,8 @@ Between the two phases, the tubes hold at 30% and the side marker at 100%, as se
 
 To let one curve drive several lights, `physicalLight` in `vehicles.js` accepts a list of channel ids as well as a single one.
 
+**Experiment (untested):** [keep the inner DRL lit while the turn signal flashes](experiments/base_led_inner_drl_turn_signal.md). It's a one-byte Lmm1 change (record 30, byte 183) that can be combined with the welcome animation coding.
+
 The base LED templates require a custom **Lmm1_Data** in both FLM2 Left 0x43 and Right 0x44: stock wert_67 with byte 208 (0-based) changed from `01` to `07`, so the outer tube uses curve 07 instead of curve 01. Lmm2 stays wert_47 and Staging2 stays wert_01. The page shows the required value (and the stock one for comparison) in the Lmm1_Data section.
 
 ### Installation
