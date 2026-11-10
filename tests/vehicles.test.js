@@ -10,13 +10,14 @@ vm.runInThisContext(fs.readFileSync('vehicles.js', 'utf8'), { filename: 'vehicle
 // Vehicle Config Validation
 // ============================================================================
 
-const VALID_TYPES = ['path', 'circle', 'polygon', 'rect'];
+const VALID_TYPES = ['path', 'circle', 'polygon', 'rect', 'image'];
 
 const REQUIRED_ATTRS = {
   path:    ['d'],
   circle:  ['cx', 'cy', 'r'],
   polygon: ['points'],
-  rect:    ['x', 'y', 'width', 'height']
+  rect:    ['x', 'y', 'width', 'height'],
+  image:   ['href', 'x', 'y', 'width', 'height']
 };
 
 const HEX_COLOR_RE = /^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
@@ -149,6 +150,12 @@ describe('base LED vehicle config', () => {
     assert.strictEqual(config.type, 'image');
     assert.strictEqual(config.baseLed, true);
     assert.ok(fs.existsSync(config.image), 'missing image asset ' + config.image);
+    for (const ch of config.channels) {
+      for (const shape of ch.shapes || []) {
+        if (shape.type === 'image') assert.ok(fs.existsSync(shape.href), 'missing glow layer ' + shape.href);
+        if (shape.type === 'image') assert.strictEqual('0 0 ' + shape.width + ' ' + shape.height, config.viewBox, 'glow layer must cover the viewBox');
+      }
+    }
   });
 
   it('should play on-curves in the unlock phase and off-curves in the switch-off phase', () => {

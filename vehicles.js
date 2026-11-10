@@ -59,7 +59,7 @@ const VEHICLE_CONFIGS = {
         type: "image",
         baseLed: true,
         image: "assets/bmw_g20_lci_base_led.png",
-        viewBox: "0 0 720 324",
+        viewBox: "0 0 960 431",
         baseSide: "left",
         // Unlock welcome plays the on-curves; switch-off (about 20 s later on the car) plays the off-curves
         phases: [
@@ -74,19 +74,19 @@ const VEHICLE_CONFIGS = {
         },
         channels: [
             { id: 1, label: "Inner DRL tube, unlock welcome (on)", shapes: [
-                    { type: "polygon", points: "300 101 641 105 645 112 629 123 338 121 345 140 396 224 388 229 380 228 293 148 290 132" }
+                    { type: "image", href: "assets/bmw_g20_lci_base_led_glow_inner.png", x: 0, y: 0, width: 960, height: 431 }
                 ]
             },
             { id: 2, label: "Both tubes, second welcome trigger (on)", physicalLight: [1, 7] },
             { id: 3, label: "Both tubes, switch-off (off)", physicalLight: [1, 7] },
             { id: 4, label: "US amber side marker, unlock (on)", shapes: [
-                    { type: "polygon", points: "46 98 70 90 78 106 52 116", color: "#ffa000" }
+                    { type: "image", href: "assets/bmw_g20_lci_base_led_glow_marker.png", x: 0, y: 0, width: 960, height: 431 }
                 ]
             },
             { id: 5, label: "US amber side marker, switch-off (off)", physicalLight: 4 },
             { id: 6, label: "US amber side marker, second trigger (on)", physicalLight: 4 },
             { id: 7, label: "Outer DRL tube, unlock welcome (on, needs custom Lmm1)", shapes: [
-                    { type: "polygon", points: "57 104 305 99 312 105 300 118 100 122 112 137 166 218 160 224 150 224 62 140 54 118" }
+                    { type: "image", href: "assets/bmw_g20_lci_base_led_glow_outer.png", x: 0, y: 0, width: 960, height: 431 }
                 ]
             }
         ]

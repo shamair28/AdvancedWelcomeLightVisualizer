@@ -79,6 +79,17 @@ function createSVGShape(shapeDesc) {
     el.setAttribute("height", shapeDesc.height);
     if (shapeDesc.rx) el.setAttribute("rx", shapeDesc.rx);
     if (shapeDesc.ry) el.setAttribute("ry", shapeDesc.ry);
+  } else if (shapeDesc.type === "image") {
+    // Pre-rendered glow layer (same size as the vehicle image); brightness drives its opacity
+    el = document.createElementNS("http://www.w3.org/2000/svg", "image");
+    el.setAttribute("href", shapeDesc.href);
+    el.setAttribute("x", shapeDesc.x);
+    el.setAttribute("y", shapeDesc.y);
+    el.setAttribute("width", shapeDesc.width);
+    el.setAttribute("height", shapeDesc.height);
+    el.setAttribute("preserveAspectRatio", "none");
+    el.setAttribute("opacity", "0");
+    el.style.mixBlendMode = "screen";
   }
   if (el && shapeDesc.color) {
     el.setAttribute("data-color", shapeDesc.color);
@@ -451,9 +462,17 @@ function applyBrightness(element, brightness) {
       ? Array.from(element.children).filter(c => c.tagName !== 'title')
       : [element];
 
+    const isGlowLayer = shape => shape.tagName === 'image';
+    for (const shape of shapes.filter(isGlowLayer)) {
+      shape.setAttribute("opacity", String(Math.max(0, brightness) / 100));
+    }
+    const vectorShapes = shapes.filter(shape => !isGlowLayer(shape));
+    // Glow layers carry their own bloom, so only vector shapes get the drop-shadow halo
+    if (vectorShapes.length === 0) return;
+
     if (brightness > 0) {
       const defaultColor = `rgba(255, 255, 255, ${brightness / 100})`;
-      for (const shape of shapes) {
+      for (const shape of vectorShapes) {
         const baseColor = shape.getAttribute('data-color');
         let color;
         if (baseColor) {
@@ -470,7 +489,7 @@ function applyBrightness(element, brightness) {
         element.style.filter = `drop-shadow(0 0 ${brightness / 10}px rgba(255, 255, 255, 0.8))`;
       }
     } else {
-      for (const shape of shapes) {
+      for (const shape of vectorShapes) {
         shape.setAttribute("fill", "transparent");
         shape.setAttribute("stroke", "transparent");
       }

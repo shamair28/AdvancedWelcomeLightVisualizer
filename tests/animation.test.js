@@ -334,3 +334,24 @@ describe('getControllingChannelsSorted with multi-target aliases', () => {
     assert.deepStrictEqual(getControllingChannelsSorted(7, config, timeline), [7, 3]);
   });
 });
+
+describe('image glow layers', () => {
+  const glowDesc = { type: 'image', href: 'glow.png', x: 0, y: 0, width: 960, height: 431 };
+
+  it('should create an SVG image element that starts hidden', () => {
+    const el = createSVGShape(glowDesc);
+    assert.strictEqual(el.tagName, 'image');
+    assert.strictEqual(el.getAttribute('href'), 'glow.png');
+    assert.strictEqual(el.getAttribute('opacity'), '0');
+  });
+
+  it('should drive glow layer opacity from brightness', () => {
+    const layer = createSVGShape(glowDesc);
+    const group = { tagName: 'g', children: [layer], style: {}, classList: { contains: () => false } };
+    Object.setPrototypeOf(group, SVGElement.prototype);
+    applyBrightness(group, 30);
+    assert.strictEqual(layer.getAttribute('opacity'), '0.3');
+    applyBrightness(group, 0);
+    assert.strictEqual(layer.getAttribute('opacity'), '0');
+  });
+});
