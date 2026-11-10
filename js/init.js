@@ -32,7 +32,7 @@ function copyAllFields() {
     right1: document.getElementById('rightStaging1').value,
     right2: document.getElementById('rightStaging2').value,
   };
-  navigator.clipboard.writeText(JSON.stringify(data))
+  navigator.clipboard.writeText(JSON.stringify(data, null, 2))
     .then(() => console.log('All fields copied to clipboard'))
     .catch(err => console.error('Failed to copy all fields:', err));
 }
@@ -281,6 +281,9 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 window.onload = () => {
+  if (localStorage.getItem("darkMode") === "true") {
+    document.body.classList.add("dark-mode");
+  }
   initVehicles();
   const restoredFromURL = restoreFromURLData();
   if (!restoredFromURL) {
