@@ -42,6 +42,25 @@ Credits to **[sig_serg](https://g20.bimmerpost.com/forums/showpost.php?p=3185093
 Before you can use this website, you need to copy the data of your Staging1_Data and Staging2_Data fron the left or right FLM2 control unit.  
 The data should be the same for the left and right control units, as the animation for the G20 LCI works in a different way that wasn´t reverse engineered yet.
 
+### Base LED (US G20 LCI, CAFD 000043AF)
+
+US G20 LCI cars with base LED headlights use FLM2 CAFD 000043AF (version 016_020_000), which has different animation curves than the Adaptive LED / Laser FLM2 (CAFD 00006DF0).
+Switch on the **Base LED** toggle next to the Visualizer Model selector to list only the base LED templates and use the matching visualizer model. The toggle is stored in the URL as `baseled=1`.
+
+Curves ("channels") on base LED:
+
+| Curve | Meaning |
+| --- | --- |
+| 01 | Inner DRL tube, unlock welcome (on) |
+| 02 | Both tubes, second welcome trigger (on) |
+| 03 | Both tubes, switch-off (off) |
+| 04 | US amber side marker, unlock (on) |
+| 05 | US amber side marker, switch-off (off) |
+| 06 | US amber side marker, second trigger (on) |
+| 07 | Outer DRL tube, unlock welcome (on), only exists with the custom Lmm1 |
+
+The base LED templates require a custom **Lmm1_Data** in both FLM2 Left 0x43 and Right 0x44: stock wert_67 with byte 208 (0-based) changed from `01` to `07`, so the outer tube uses curve 07 instead of curve 01. Lmm2 stays wert_47 and Staging2 stays wert_01. The page shows the required value (and the stock one for comparison) in the Lmm1_Data section.
+
 ### Installation
 
 There´s nothing to install, just download the `index.html` file.

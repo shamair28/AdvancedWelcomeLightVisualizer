@@ -550,6 +550,97 @@ textarea.overflow-error {
   gap: 20px;
 }
 
+.selector-row select {
+  vertical-align: middle;
+}
+
+.toggle-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 12px;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.toggle-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: relative;
+  width: 34px;
+  height: 18px;
+  background-color: #ccc;
+  border-radius: 18px;
+  transition: background-color 0.2s;
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #007bff;
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(16px);
+}
+
+.toggle-switch input:focus-visible + .toggle-slider {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.hidden {
+  display: none;
+}
+
+.lmm1-section {
+  max-width: 1100px;
+  margin: 0 auto 20px;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fffbe6;
+}
+
+.lmm1-section h3 {
+  margin-top: 0;
+}
+
+.lmm1-explanation,
+.lmm1-diff-note {
+  font-size: 13px;
+  margin: 0 0 10px;
+}
+
+.lmm1-diff-note {
+  color: #a05a00;
+}
+
+.lmm1-stock-label {
+  font-size: 12px;
+  color: #555;
+}
+
+.lmm1-stock-row input {
+  font-size: 11px;
+  color: #555;
+}
+
 .selector-label {
   display: inline-block;
   margin-right: 10px;

@@ -1,4 +1,7 @@
 let loadedTemplateKey = null;
+let lastNonBaseLedVehicle = '';
+let lastNonBaseLedTemplate = '';
+const BASE_LED_PARAM = 'baseled';
 
 function copyToClipboard(fieldId) {
   const text = document.getElementById(fieldId).value;
@@ -84,6 +87,22 @@ function buildDynamicFields() {
 
   renderDynamicSequences();
   rebuildAnimationPlayer();
+  updateLmm1Section();
+}
+
+function isBaseLedMode() {
+  return document.getElementById('baseLedToggle').checked === true;
+}
+
+function updateLmm1Section() {
+  const section = document.getElementById('lmm1Section');
+  const baseLed = isBaseLedMode();
+  section.classList.toggle('hidden', !baseLed);
+  if (!baseLed) return;
+
+  const template = TEMPLATES[loadedTemplateKey];
+  document.getElementById('lmm1Custom').value = (template && template.lmm1) || BASE_LED_LMM1_CUSTOM;
+  document.getElementById('lmm1Stock').value = BASE_LED_LMM1_STOCK;
 }
 
 function onDataEdited() {
@@ -114,6 +133,7 @@ function updateURLParams() {
     const params = new URLSearchParams();
     const vehicle = document.getElementById('vehicleSelect').value;
     if (vehicle) params.set('vehicle', vehicle);
+    if (isBaseLedMode()) params.set(BASE_LED_PARAM, '1');
 
     if (loadedTemplateKey) {
       params.set('template', loadedTemplateKey);
@@ -162,10 +182,11 @@ function getDefault(paramName, configValue) {
   return urlParams.get(paramName) || configValue || "";
 }
 
-function initializeSelect(elementId, dataObj, urlParam, configKey, labelFn) {
+function initializeSelect(elementId, dataObj, urlParam, configKey, labelFn, filterFn = () => true) {
   const select = document.getElementById(elementId);
   select.innerHTML = '';
-  for (const key of Object.keys(dataObj)) {
+  const visibleKeys = Object.keys(dataObj).filter(key => filterFn(dataObj[key]));
+  for (const key of visibleKeys) {
     const option = document.createElement('option');
     option.value = key;
     option.textContent = labelFn(key);
@@ -173,7 +194,7 @@ function initializeSelect(elementId, dataObj, urlParam, configKey, labelFn) {
   }
   const configVal = (typeof APP_CONFIG !== 'undefined') ? APP_CONFIG[configKey] : '';
   const defaultVal = getDefault(urlParam, configVal);
-  if (defaultVal && dataObj[defaultVal]) {
+  if (defaultVal && visibleKeys.includes(defaultVal)) {
     select.value = defaultVal;
   }
 }
@@ -183,7 +204,11 @@ function initTemplates() {
     console.warn('TEMPLATES not found. Make sure templates.js is loaded.');
     return;
   }
-  initializeSelect('templateSelect', TEMPLATES, 'template', 'defaultTemplate', key => key);
+  initializeSelect('templateSelect', TEMPLATES, 'template', 'defaultTemplate', key => key, matchesBaseLedMode);
+}
+
+function matchesBaseLedMode(entry) {
+  return (entry.baseLed === true) === isBaseLedMode();
 }
 
 function initVehicles() {
@@ -192,7 +217,50 @@ function initVehicles() {
     return;
   }
   initializeSelect('vehicleSelect', VEHICLE_CONFIGS, 'vehicle', 'defaultVehicle',
-    key => VEHICLE_CONFIGS[key].name || key);
+    key => VEHICLE_CONFIGS[key].name || key, matchesBaseLedMode);
+}
+
+function initBaseLedToggle() {
+  const urlParams = new URLSearchParams(window.location.search);
+  document.getElementById('baseLedToggle').checked = urlParams.get(BASE_LED_PARAM) === '1';
+}
+
+function onBaseLedToggled() {
+  const vehicleSelect = document.getElementById('vehicleSelect');
+  const templateSelect = document.getElementById('templateSelect');
+
+  if (isBaseLedMode()) {
+    lastNonBaseLedVehicle = vehicleSelect.value;
+    lastNonBaseLedTemplate = loadedTemplateKey || '';
+  }
+  const defaultVehicle = (typeof APP_CONFIG !== 'undefined') ? APP_CONFIG.defaultVehicle : '';
+  const preferredVehicle = isBaseLedMode() ? '' : (lastNonBaseLedVehicle || defaultVehicle);
+  const previousTemplateKey = loadedTemplateKey;
+
+  initVehicles();
+  if (preferredVehicle && VEHICLE_CONFIGS[preferredVehicle] && !VEHICLE_CONFIGS[preferredVehicle].baseLed) {
+    vehicleSelect.value = preferredVehicle;
+  }
+
+  initTemplates();
+  const stillListed = previousTemplateKey && TEMPLATES[previousTemplateKey]
+    && matchesBaseLedMode(TEMPLATES[previousTemplateKey]);
+  if (stillListed) {
+    templateSelect.value = previousTemplateKey;
+  } else {
+    const defaultTemplate = (typeof APP_CONFIG !== 'undefined') ? APP_CONFIG.defaultTemplate : '';
+    const fallbackTemplate = isBaseLedMode() ? '' : (lastNonBaseLedTemplate || defaultTemplate);
+    if (fallbackTemplate && TEMPLATES[fallbackTemplate] && matchesBaseLedMode(TEMPLATES[fallbackTemplate])) {
+      templateSelect.value = fallbackTemplate;
+    } else {
+      templateSelect.selectedIndex = 0;
+    }
+    loadedTemplateKey = null;
+    loadSelectedTemplate();
+  }
+
+  buildDynamicFields();
+  updateURLParams();
 }
 
 function loadSelectedTemplate() {
@@ -207,7 +275,10 @@ function loadSelectedTemplate() {
   setStagingFields(data.left1 || '', data.left2 || '', data.right1 || '', data.right2 || '');
 }
 
-window.addEventListener('DOMContentLoaded', initTemplates);
+window.addEventListener('DOMContentLoaded', () => {
+  initBaseLedToggle();
+  initTemplates();
+});
 
 window.onload = () => {
   initVehicles();

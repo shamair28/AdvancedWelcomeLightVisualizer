@@ -21,10 +21,15 @@
       </select>
     </div>
     <div>
-      <label for="vehicleSelect" class="selector-label">Vehicle Model:</label>
+      <label for="vehicleSelect" class="selector-label">Visualizer Model:</label>
       <select id="vehicleSelect" onchange="buildDynamicFields(); updateURLParams()">
         <!-- Populated dynamically -->
       </select>
+      <label class="toggle-switch" for="baseLedToggle" title="US G20 LCI base LED headlights (CAFD 000043AF)">
+        <input type="checkbox" id="baseLedToggle" onchange="onBaseLedToggled()">
+        <span class="toggle-slider"></span>
+        <span class="toggle-text">Base LED</span>
+      </label>
     </div>
   </div>
 
@@ -65,6 +70,30 @@
         <button class="copy-btn" title="Copy to Clipboard" onclick="copyToClipboard('rightStaging2')">⧉</button>
         <button class="paste-btn" title="Paste from Clipboard" onclick="pasteFromClipboard('rightStaging2')">⤶</button>
       </div>
+    </div>
+  </div>
+
+  <div class="lmm1-section hidden" id="lmm1Section">
+    <h3>Lmm1_Data (required for these animations)</h3>
+    <p class="lmm1-explanation">
+      Lmm1 routes each LED output to a staging curve. The stock US wert_67 sends both DRL tubes to curve 01; the custom
+      value below sends the outer tube to curve 07 instead. Code the same Lmm1 in FLM2 Left 0x43 and Right 0x44.
+      Lmm2 stays wert_47 and Staging2 stays wert_01 (stock). Built for CAFD_000043AF_016_020_000 &ndash; verify that
+      your stock Lmm1 matches the wert_67 shown below before coding.
+    </p>
+    <label for="lmm1Custom">Required Lmm1_Data (252 Byte):</label>
+    <div class="input-row">
+      <input type="text" id="lmm1Custom" readonly />
+      <button class="copy-btn" title="Copy to Clipboard" onclick="copyToClipboard('lmm1Custom')">⧉</button>
+    </div>
+    <p class="lmm1-diff-note">
+      Differs from stock only at byte 208 (0-based): <code>01</code> &rarr; <code>07</code>
+      (outer tube record <code>53,81,67,1E,01,03</code> &rarr; <code>53,81,67,1E,07,03</code>).
+    </p>
+    <label for="lmm1Stock" class="lmm1-stock-label">Stock wert_67 (for comparison):</label>
+    <div class="input-row lmm1-stock-row">
+      <input type="text" id="lmm1Stock" readonly />
+      <button class="copy-btn" title="Copy to Clipboard" onclick="copyToClipboard('lmm1Stock')">⧉</button>
     </div>
   </div>
 

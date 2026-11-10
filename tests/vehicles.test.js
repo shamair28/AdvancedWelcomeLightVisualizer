@@ -138,6 +138,28 @@ describe('VEHICLE_CONFIGS structure', () => {
   }
 });
 
+describe('base LED vehicle config', () => {
+  const config = VEHICLE_CONFIGS.bmw_g20_lci_base_led;
+
+  it('should exist as a base LED grid config', () => {
+    assert.ok(config);
+    assert.strictEqual(config.type, 'grid');
+    assert.strictEqual(config.baseLed, true);
+  });
+
+  it('should label channels 1 to 7', () => {
+    assert.deepStrictEqual(config.channels.map(ch => ch.id), [1, 2, 3, 4, 5, 6, 7]);
+    for (const ch of config.channels) {
+      assert.ok(typeof ch.label === 'string' && ch.label.length > 0);
+    }
+  });
+
+  it('should be the only config flagged baseLed', () => {
+    const flagged = Object.keys(VEHICLE_CONFIGS).filter(key => VEHICLE_CONFIGS[key].baseLed === true);
+    assert.deepStrictEqual(flagged, ['bmw_g20_lci_base_led']);
+  });
+});
+
 describe('generic vehicle has no phases', () => {
   it('should not have phases property', () => {
     assert.strictEqual(VEHICLE_CONFIGS.generic.phases, undefined);
